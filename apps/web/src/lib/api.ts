@@ -353,8 +353,18 @@ const desktopAiDirectEnabled = Boolean(
 export const directProviderFetch: typeof fetch = (input, init) =>
   client.fetchAiProvider(input, init);
 
+/** Web deployments served from a subpath prefix every API call with it. */
+const resolveWebApiBaseUrl = () => {
+  if (typeof window !== "undefined" && window.edgeeverDesktop?.isAvailable) {
+    return getConfiguredDesktopApiBaseUrl();
+  }
+  const base = (import.meta.env.BASE_URL || "/").trim();
+  if (!base.startsWith("/") || base === "/") return "";
+  return base.replace(/\/+$/, "");
+};
+
 const client = createEdgeEverClient({
-  baseUrl: getConfiguredDesktopApiBaseUrl,
+  baseUrl: resolveWebApiBaseUrl,
   token: getDesktopSessionToken,
   beforeRequest,
   shouldAttachToken: (path) => !isLoginRequest(path),
