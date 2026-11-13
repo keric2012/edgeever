@@ -104,6 +104,13 @@ const registerProductionServiceWorker = () => {
   });
 };
 
+/** Web deployments can live under a subpath (for example /note). */
+const resolveWebRouterBasename = () => {
+  const base = (import.meta.env.BASE_URL || "/").trim();
+  if (!base.startsWith("/") || base === "/") return undefined;
+  return base.replace(/\/+$/, "");
+};
+
 const mountApp = () => {
   const queryClient = new QueryClient({
     defaultOptions: {
@@ -127,6 +134,7 @@ const mountApp = () => {
   applyEditorBodyFontPreference();
   applyUiFontPreference();
   const Router = isDesktopRenderer ? HashRouter : BrowserRouter;
+  const routerBasename = isDesktopRenderer ? undefined : resolveWebRouterBasename();
 
   createRoot(root, {
     onUncaughtError(error, errorInfo) {
@@ -138,7 +146,7 @@ const mountApp = () => {
         <DesktopBootstrapReady />
         <QueryClientProvider client={queryClient}>
           <ThemeProvider>
-            <Router>
+            <Router basename={routerBasename}>
               <App />
             </Router>
           </ThemeProvider>
