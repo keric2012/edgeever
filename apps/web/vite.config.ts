@@ -133,7 +133,7 @@ export default defineConfig({
   },
   // Packaged Electron apps load index.html via file://, so root-absolute
   // asset URLs resolve to the filesystem root and leave a blank window.
-  base: isDesktopBuild ? "./" : "/",
+  base: isDesktopBuild ? "./" : (process.env.EDGE_EVER_WEB_BASE_PATH || "/"),
   define: {
     __EDGEEVER_APP_VERSION__: JSON.stringify(appVersion),
     __EDGEEVER_BUILD_ID__: JSON.stringify(buildId),
