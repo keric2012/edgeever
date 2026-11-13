@@ -224,6 +224,10 @@ app.get("/api/health", async (c) => {
     return authNotConfigured(c);
   }
 
+  const activeObjectStorage = await getActiveObjectStorageConfig(c.env.storage.db);
+  const objectStorageConfigured = Boolean(
+    c.env.storage.resources || (activeObjectStorage && activeObjectStorage.provider !== "builtin"),
+  );
 
   const runtime = c.env.EDGE_EVER_RUNTIME ?? "cloudflare-workers";
 
@@ -248,7 +252,7 @@ app.get("/api/health", async (c) => {
     },
     objectStorageProvider: await getActiveObjectStorageProvider(c.env),
     objectStorage: {
-      configured: Boolean(c.env.storage.resources),
+      configured: objectStorageConfigured,
       activeProvider: await getActiveObjectStorageProvider(c.env),
     },
   });
