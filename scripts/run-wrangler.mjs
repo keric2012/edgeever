@@ -315,7 +315,12 @@ if (isDeployCommand && (!explicitR2BucketName || !explicitAuthUsername)) {
 const resolvedR2BucketName = explicitR2BucketName || inheritedR2BucketName;
 const resolvedAuthUsername = explicitAuthUsername || inheritedAuthUsername || "admin";
 
-config = replaceTomlValue(config, "bucket_name", resolvedR2BucketName);
+if (resolvedR2BucketName) {
+  config = replaceTomlValue(config, "bucket_name", resolvedR2BucketName);
+} else {
+  // Deployments without object storage must not ship an R2 binding.
+  config = config.replace(/\n\[\[r2_buckets\]\][\s\S]*?(?=\n\[|\s*$)/, "");
+}
 config = replaceTomlValue(
   config,
   "preview_bucket_name",
