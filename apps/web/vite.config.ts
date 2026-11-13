@@ -94,6 +94,8 @@ const TARGET_VENDOR_CHUNK_BYTES = 450 * 1024;
 const releaseTimestamp = resolveReleaseTimestamp(process.env.EDGE_EVER_RELEASED_AT) || readLatestReleaseCommitTimestamp();
 const deploymentMetadata = resolveDeploymentBuildMetadata(process.env);
 const isDesktopBuild = process.env.EDGE_EVER_DESKTOP_BUILD === "1";
+// Subpath deployment: this instance is mounted under /note on sailingai.work.
+const WEB_BASE_PATH = "/note/";
 const developmentServiceWorkerReset: Plugin = {
   name: "edgeever-development-service-worker-reset",
   apply: "serve",
@@ -133,7 +135,7 @@ export default defineConfig({
   },
   // Packaged Electron apps load index.html via file://, so root-absolute
   // asset URLs resolve to the filesystem root and leave a blank window.
-  base: isDesktopBuild ? "./" : "/note/",
+  base: isDesktopBuild ? "./" : WEB_BASE_PATH,
   define: {
     __EDGEEVER_APP_VERSION__: JSON.stringify(appVersion),
     __EDGEEVER_BUILD_ID__: JSON.stringify(buildId),
@@ -160,8 +162,8 @@ export default defineConfig({
         name: "EdgeEver",
         short_name: "EdgeEver",
         description: "EdgeEver：基于 Cloudflare 与 Docker 自托管的现代化开源笔记与 AI 个人知识库。",
-        start_url: "/",
-        scope: "/",
+        start_url: WEB_BASE_PATH,
+        scope: WEB_BASE_PATH,
         display: "standalone",
         background_color: "#0f172a",
         theme_color: "#0f172a",
@@ -169,17 +171,17 @@ export default defineConfig({
         categories: ["productivity", "utilities"],
         icons: [
           {
-            src: "/pwa-192x192.png",
+            src: `${WEB_BASE_PATH}pwa-192x192.png`,
             sizes: "192x192",
             type: "image/png",
           },
           {
-            src: "/pwa-512x512.png",
+            src: `${WEB_BASE_PATH}pwa-512x512.png`,
             sizes: "512x512",
             type: "image/png",
           },
           {
-            src: "/maskable-icon-512x512.png",
+            src: `${WEB_BASE_PATH}maskable-icon-512x512.png`,
             sizes: "512x512",
             type: "image/png",
             purpose: "maskable",
